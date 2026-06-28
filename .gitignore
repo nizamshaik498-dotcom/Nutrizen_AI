@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Environment files
+.env
+backend/.env
+frontend/.env
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+*.egg
+
+# Python virtual env
+venv/
+env/
+.venv/
+
+# Vite / React
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Uploaded / processed images
+/tmp/
+*.jpg
+*.jpeg
+*.png
+!public/*.png
+
+# SQLite (if used locally)
+*.db
+*.sqlite
+
+# Logs
+*.log
