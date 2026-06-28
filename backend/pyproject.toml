@@ -13,6 +13,6 @@ dependencies = [
   "pillow",
   "groq",
   "python-dotenv",
-  "bcrypt",
+  "bcrypt<4.2",
   "psycopg2-binary",
 ]

@@ -41,38 +41,26 @@ class TokenResponse(BaseModel):
 
 @router.post("/register")
 def register(user: UserRegister, db: Session = Depends(get_db)):
-    import traceback
-    try:
-        existing = db.query(User).filter(
-            (User.username == user.username) | (User.email == user.email)
-        ).first()
-        if existing:
-            raise HTTPException(status_code=400, detail="Username or email already exists")
+    existing = db.query(User).filter(
+        (User.username == user.username) | (User.email == user.email)
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Username or email already exists")
 
-        if not isinstance(user.password, str):
-            raise HTTPException(status_code=500, detail=f"Password is not a string: {type(user.password)} value={repr(user.password)}")
-        if len(user.password) > 50:
-            raise HTTPException(status_code=500, detail=f"Password too long: {len(user.password)} bytes")
-        hashed = pwd_context.hash(user.password)
-        new_user = User(
-            username=user.username,
-            email=user.email,
-            hashed_password=hashed,
-            full_name=user.full_name,
-            age=user.age,
-            allergies=user.allergies,
-            medical_conditions=user.medical_conditions,
-            dietary_preferences=user.dietary_preferences,
-        )
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        return {"message": "User created", "user_id": new_user.id}
-    except HTTPException:
-        raise
-    except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Registration failed: {e}")
+    new_user = User(
+        username=user.username,
+        email=user.email,
+        hashed_password=pwd_context.hash(user.password),
+        full_name=user.full_name,
+        age=user.age,
+        allergies=user.allergies,
+        medical_conditions=user.medical_conditions,
+        dietary_preferences=user.dietary_preferences,
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"message": "User created", "user_id": new_user.id}
 
 
 @router.post("/login", response_model=TokenResponse)
