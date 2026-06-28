@@ -49,6 +49,10 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
         if existing:
             raise HTTPException(status_code=400, detail="Username or email already exists")
 
+        if not isinstance(user.password, str):
+            raise HTTPException(status_code=500, detail=f"Password is not a string: {type(user.password)} value={repr(user.password)}")
+        if len(user.password) > 50:
+            raise HTTPException(status_code=500, detail=f"Password too long: {len(user.password)} bytes")
         hashed = pwd_context.hash(user.password)
         new_user = User(
             username=user.username,
