@@ -1,3 +1,5 @@
+import API from './api'
+
 const STORAGE_KEY = 'nutrivision_favorites'
 
 export function getFavorites() {
@@ -35,14 +37,14 @@ export async function toggleFavoriteServer(name, recipeData, token) {
       const favs = await getFavoritesServer(token)
       const match = favs.find(f => f.recipe_name === name)
       if (match) {
-        await fetch(`https://FaizBasha05.pythonanywhere.com/favorites/${match.id}`, {
+        await fetch(`${API}/api/favorites/${match.id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },
         })
       }
       return false
     } else {
-      await fetch('https://FaizBasha05.pythonanywhere.com/favorites/', {
+      await fetch(`${API}/api/favorites/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ recipe_name: name, recipe_data: recipeData || '' }),
@@ -55,7 +57,7 @@ export async function toggleFavoriteServer(name, recipeData, token) {
 export async function getFavoritesServer(token) {
   if (!token) return getFavorites().map(n => ({ recipe_name: n }))
   try {
-    const res = await fetch('https://FaizBasha05.pythonanywhere.com/favorites/', {
+    const res = await fetch(`${API}/api/favorites/`, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
     if (!res.ok) return getFavorites().map(n => ({ recipe_name: n }))

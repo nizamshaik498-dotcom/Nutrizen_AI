@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import SEO from '../components/SEO'
 import { getScanHistory } from '../utils/scanHistory'
 import { useAuth } from '../utils/AuthContext'
+import API from '../utils/api'
 
 const STORAGE_KEY = 'nutrivision_meal_plan'
 const AI_PLAN_KEY = 'nutrivision_ai_meal_plan'
@@ -65,7 +66,7 @@ export default function MealPlanner() {
     setAiError('')
     try {
       const pantry = JSON.parse(localStorage.getItem('nutrivision_pantry') || '[]')
-      const res = await fetch('https://FaizBasha05.pythonanywhere.com/meal-planner/generate', {
+      const res = await fetch(`${API}/api/meal-planner/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ available_ingredients: pantry.map(i => i.name || i) }),

@@ -4,6 +4,7 @@ import SEO from '../components/SEO'
 import { RecipeCardItem } from '../components/RecipeCard'
 import { getPantry, addToPantry, removeFromPantry, clearPantry } from '../utils/pantry'
 import { toggleFavorite, getFavorites } from '../utils/favorites'
+import API from '../utils/api'
 
 function flattenRecipes(data) {
   const items = []
@@ -70,7 +71,7 @@ export default function Recipes() {
   }
 
   useEffect(() => {
-    fetch('https://FaizBasha05.pythonanywhere.com/scan/demo')
+    fetch(`${API}/api/scan/demo`)
       .then(res => {
         if (!res.ok) throw new Error(`Failed to fetch (${res.status})`)
         return res.json()

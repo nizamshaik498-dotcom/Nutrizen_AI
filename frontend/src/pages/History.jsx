@@ -10,6 +10,7 @@ import AllergyReport from '../components/AllergyReport'
 import Substitutions from '../components/Substitutions'
 import Improvements from '../components/Improvements'
 import { getScanHistory, clearScanHistory, getScanPreview } from '../utils/scanHistory'
+import API from '../utils/api'
 
 export default function History() {
   const { t } = useTranslation()
@@ -21,7 +22,7 @@ export default function History() {
 
   useEffect(() => {
     if (user && token) {
-      fetch('https://FaizBasha05.pythonanywhere.com/scan/history', {
+      fetch(`${API}/api/scan/history`, {
         headers: { 'Authorization': `Bearer ${token}` },
       })
         .then(res => res.json())
@@ -45,7 +46,7 @@ export default function History() {
 
   const handleSelectServer = async (id) => {
     try {
-      const res = await fetch(`https://FaizBasha05.pythonanywhere.com/scan/${id}`, {
+      const res = await fetch(`${API}/api/scan/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       })
       const data = await res.json()

@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../utils/AuthContext'
 import FridgeScanner from './FridgeScanner'
 import { getFridgeItems } from '../utils/fridgeMode'
-
-const API = 'https://FaizBasha05.pythonanywhere.com'
+import API from '../utils/api'
 
 export default function Scanner({ onScanComplete }) {
   const { t } = useTranslation()

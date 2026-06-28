@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-
-const API = 'https://FaizBasha05.pythonanywhere.com'
+import API from '../utils/api'
 const VERIFIED_KEY = 'recipex_site_unlocked'
 
 export default function SiteLockGate({ children }) {

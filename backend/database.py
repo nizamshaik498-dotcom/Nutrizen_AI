@@ -7,7 +7,7 @@ load_dotenv()
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "sqlite:///./nutrivision.db"
+    os.getenv("POSTGRES_URL", "sqlite:///./nutrivision.db")
 )
 
 connect_args = {}

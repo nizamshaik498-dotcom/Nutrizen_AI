@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
-
-const API = 'https://FaizBasha05.pythonanywhere.com'
+import API from './api'
 const TOKEN_KEY = 'nutrivision_token'
 const USER_KEY = 'nutrivision_user'
 

@@ -1,8 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-
-const API = 'https://FaizBasha05.pythonanywhere.com'
+import API from '../utils/api'
 
 export default function useVoiceAssistant() {
   const [isListening, setIsListening] = useState(false)

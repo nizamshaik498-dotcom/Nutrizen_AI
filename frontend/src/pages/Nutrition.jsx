@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../utils/AuthContext'
 import SEO from '../components/SEO'
+import API from '../utils/api'
 
 const nutrientRows = [
   { key: 'calories_kcal', label: 'Calories (kcal)', max: 100, color: 'from-lime-400 to-lime-500' },
@@ -68,7 +69,7 @@ export default function Nutrition() {
   const [dailyHistory, setDailyHistory] = useState([])
 
   useEffect(() => {
-    fetch('https://FaizBasha05.pythonanywhere.com/scan/demo')
+    fetch(`${API}/api/scan/demo`)
       .then(res => {
         if (!res.ok) throw new Error(`Failed to fetch (${res.status})`)
         return res.json()
@@ -79,7 +80,7 @@ export default function Nutrition() {
 
   useEffect(() => {
     if (user && token) {
-      fetch('https://FaizBasha05.pythonanywhere.com/nutrition/history?days=7', {
+      fetch(`${API}/api/nutrition/history?days=7`, {
         headers: { 'Authorization': `Bearer ${token}` },
       })
         .then(res => res.json())
@@ -93,7 +94,7 @@ export default function Nutrition() {
     setSaving(true)
     try {
       const today = new Date().toISOString().split('T')[0]
-      const res = await fetch('https://FaizBasha05.pythonanywhere.com/nutrition/log', {
+      const res = await fetch(`${API}/api/nutrition/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ ...log, log_date: today }),
@@ -102,7 +103,7 @@ export default function Nutrition() {
       setLogSaved(true)
       setLog({ food_name: '', meal_type: 'breakfast', calories_kcal: 0, protein_g: 0, carbohydrates_g: 0, fat_g: 0, fibre_g: 0 })
       setTimeout(() => setLogSaved(false), 2000)
-      const hist = await fetch('https://FaizBasha05.pythonanywhere.com/nutrition/history?days=7', {
+      const hist = await fetch(`${API}/api/nutrition/history?days=7`, {
         headers: { 'Authorization': `Bearer ${token}` },
       })
       setDailyHistory(await hist.json())

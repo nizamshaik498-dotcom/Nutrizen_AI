@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getFridgeItems, addFridgeItem, removeFridgeItem, clearFridge, findMatchingRecipes } from '../utils/fridgeMode'
 import { Link } from 'react-router-dom'
+import API from '../utils/api'
 
 const categories = [
   {
@@ -117,7 +118,7 @@ export default function FridgeScanner() {
   const handleScanFridge = async () => {
     setLoading(true)
     try {
-      const res = await fetch('https://FaizBasha05.pythonanywhere.com/scan/demo')
+      const res = await fetch(`${API}/api/scan/demo`)
       const data = await res.json()
       const allRecipes = []
       if (data?.result?.recipes) {

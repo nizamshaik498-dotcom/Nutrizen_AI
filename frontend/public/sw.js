@@ -1,6 +1,6 @@
-const CACHE = 'recipex-v3'
-const STATIC_CACHE = 'recipex-static-v2'
-const API_CACHE = 'recipex-api-v1'
+const CACHE = 'nutrizen-v1'
+const STATIC_CACHE = 'nutrizen-static-v1'
+const API_CACHE = 'nutrizen-api-v1'
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()
@@ -20,9 +20,10 @@ self.addEventListener('fetch', (e) => {
   if (method !== 'GET') return
 
   const requestUrl = new URL(url)
+  const isApi = requestUrl.pathname.startsWith('/api/')
 
   // API requests — NetworkFirst with long cache
-  if (requestUrl.hostname === 'FaizBasha05.pythonanywhere.com') {
+  if (isApi) {
     e.respondWith(
       fetch(e.request).then(res => {
         const clone = res.clone()
