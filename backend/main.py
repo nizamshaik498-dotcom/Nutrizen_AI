@@ -22,12 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router, prefix="/api")
-app.include_router(scan_router, prefix="/api")
-app.include_router(favorites_router, prefix="/api")
-app.include_router(meal_planner_router, prefix="/api")
-app.include_router(nutrition_router, prefix="/api")
-app.include_router(site_lock_router, prefix="/api")
+app.include_router(auth_router)
+app.include_router(scan_router)
+app.include_router(favorites_router)
+app.include_router(meal_planner_router)
+app.include_router(nutrition_router)
+app.include_router(site_lock_router)
 
 
 @app.on_event("startup")
