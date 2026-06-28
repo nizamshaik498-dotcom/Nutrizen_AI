@@ -1,0 +1,18 @@
+[project]
+name = "nutrizen-ai-backend"
+version = "2.0.0"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "sqlalchemy",
+  "passlib",
+  "python-jose",
+  "python-multipart",
+  "pillow",
+  "groq",
+  "python-dotenv",
+  "bcrypt",
+  "psycopg2-binary",
+]

@@ -5,9 +5,8 @@
       "routePrefix": "/"
     },
     "api": {
-      "entrypoint": "api/index.py",
+      "entrypoint": "backend/main.py",
       "routePrefix": "/api",
-      "framework": "fastapi",
       "maxDuration": 30,
       "memory": 512
     }
