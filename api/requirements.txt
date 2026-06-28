@@ -9,3 +9,4 @@ pillow
 groq
 python-dotenv
 bcrypt
+psycopg2-binary
