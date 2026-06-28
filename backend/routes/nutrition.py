@@ -1,27 +1,71 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func, Date
+from pydantic import BaseModel
+from datetime import date, timedelta
+from database import get_db
+from routes.auth import get_current_user
+from models.user import User
+from models.nutrition_log import NutritionLog
 
-from ..database import get_db
-from ..models.vegetable import Vegetable
-from ..models.scan import Scan
+router = APIRouter(prefix="/nutrition", tags=["Nutrition"])
 
-router = APIRouter(prefix="/nutrition", tags=["nutrition"])
+class LogEntry(BaseModel):
+    log_date: str
+    meal_type: str = ""
+    food_name: str = ""
+    calories_kcal: float = 0
+    protein_g: float = 0
+    carbohydrates_g: float = 0
+    fat_g: float = 0
+    fibre_g: float = 0
 
+@router.post("/log")
+def log_nutrition(entry: LogEntry, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    log = NutritionLog(
+        user_id=current_user.id,
+        log_date=date.fromisoformat(entry.log_date),
+        meal_type=entry.meal_type,
+        food_name=entry.food_name,
+        calories_kcal=entry.calories_kcal,
+        protein_g=entry.protein_g,
+        carbohydrates_g=entry.carbohydrates_g,
+        fat_g=entry.fat_g,
+        fibre_g=entry.fibre_g,
+    )
+    db.add(log)
+    db.commit()
+    db.refresh(log)
+    return {"id": log.id, "message": "Logged"}
 
-@router.get("/{vegetable_name}")
-def get_nutrition(vegetable_name: str, db: Session = Depends(get_db)):
-    scans = db.query(Scan).filter(
-        Scan.full_result.isnot(None)
-    ).order_by(Scan.created_at.desc()).limit(20).all()
+@router.get("/history")
+def get_nutrition_history(
+    days: int = Query(7, ge=1, le=90),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    since = date.today() - timedelta(days=days - 1)
+    logs = (
+        db.query(NutritionLog)
+        .filter(NutritionLog.user_id == current_user.id, NutritionLog.log_date >= since)
+        .order_by(NutritionLog.log_date.desc(), NutritionLog.id.desc())
+        .all()
+    )
 
-    for scan in scans:
-        if scan.full_result and "nutrition" in scan.full_result:
-            for item in scan.full_result["nutrition"]:
-                if vegetable_name.lower() in item.get("vegetable_name", "").lower():
-                    return item
+    daily_totals = {}
+    for log in logs:
+        d = str(log.log_date)
+        if d not in daily_totals:
+            daily_totals[d] = {"date": d, "calories": 0, "protein": 0, "carbs": 0, "fat": 0, "fibre": 0, "meals": []}
+        daily_totals[d]["calories"] += log.calories_kcal or 0
+        daily_totals[d]["protein"] += log.protein_g or 0
+        daily_totals[d]["carbs"] += log.carbohydrates_g or 0
+        daily_totals[d]["fat"] += log.fat_g or 0
+        daily_totals[d]["fibre"] += log.fibre_g or 0
+        daily_totals[d]["meals"].append({
+            "meal_type": log.meal_type,
+            "food_name": log.food_name,
+            "calories": log.calories_kcal,
+        })
 
-    return {
-        "vegetable_name": vegetable_name,
-        "message": "No cached nutrition data found. Please scan this vegetable first.",
-        "note": "Nutrition data will be available after a scan is performed.",
-    }
+    return sorted(daily_totals.values(), key=lambda x: x["date"], reverse=True)

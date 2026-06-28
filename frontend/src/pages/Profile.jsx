@@ -1,198 +1,87 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
-import { register, login as apiLogin, updateProfile as apiUpdateProfile } from "../services/api";
-import { ArrowLeft, User, Mail, Lock, Save, LogOut, Loader2 } from "lucide-react";
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '../utils/AuthContext'
+import { Link, useNavigate } from 'react-router-dom'
+import SEO from '../components/SEO'
 
 export default function Profile() {
-  const navigate = useNavigate();
-  const { user, login, logout, updateProfile } = useUser();
-  const [isLogin, setIsLogin] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [form, setForm] = useState({
-    name: "", email: "", password: "", weight_kg: "", height_cm: "", age: "",
-    gender: "male", fitness_goal: "maintain", preferred_cuisine: "Indian", language: "English",
-  });
+  const { t } = useTranslation()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    if (user) {
-      setForm({
-        name: user.name || "",
-        email: user.email || "",
-        password: "",
-        weight_kg: user.weight_kg || "",
-        height_cm: user.height_cm || "",
-        age: user.age || "",
-        gender: user.gender || "male",
-        fitness_goal: user.fitness_goal || "maintain",
-        preferred_cuisine: user.preferred_cuisine || "Indian",
-        language: user.language || "English",
-      });
-    }
-  }, [user]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      if (user) {
-        const data = await apiUpdateProfile(user.id, {
-          name: form.name, weight_kg: parseFloat(form.weight_kg) || null,
-          height_cm: parseFloat(form.height_cm) || null, age: parseInt(form.age) || null,
-          gender: form.gender, fitness_goal: form.fitness_goal,
-          preferred_cuisine: form.preferred_cuisine, language: form.language,
-        });
-        updateProfile(data.user);
-      } else if (isLogin) {
-        const data = await apiLogin(form.email, form.password);
-        login({ ...data.user, token: data.token });
-      } else {
-        const data = await register({
-          ...form, weight_kg: parseFloat(form.weight_kg) || null,
-          height_cm: parseFloat(form.height_cm) || null, age: parseInt(form.age) || null,
-        });
-        login({ ...data.user, token: data.token });
-      }
-    } catch (err) {
-      setError(err.response?.data?.detail || err.message || "Operation failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-lg mx-auto px-4 py-6">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-600 mb-4">
-          <ArrowLeft size={18} /> Back
-        </button>
-
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-green-100 p-3 rounded-full">
-            <User size={24} className="text-green-600" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">{user ? "Profile" : "Account"}</h1>
-            <p className="text-sm text-gray-500">
-              {user ? "Manage your preferences" : "Sign in to get started"}
-            </p>
+  if (!user) return (
+    <>
+      <SEO title="Profile" description="Your NutriZen AI account profile." />
+      <div className="max-w-3xl mx-auto px-4 py-8 text-center">
+        <div className="glass-card rounded-2xl p-8 shadow-sm">
+          <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/50 dark:to-teal-900/50 border-2 border-lime-200 dark:border-lime-700/50 flex items-center justify-center text-4xl shadow-lg">🔒</div>
+          <p className="text-xl font-bold text-stone-700 dark:text-stone-200 mb-2">{t('auth.signInRequired')}</p>
+          <p className="text-sm text-stone-500 dark:text-stone-400 mb-8">{t('auth.signInDesc')}</p>
+          <div className="flex gap-3 justify-center">
+            <Link to="/login" className="px-6 py-3 btn-glass btn-glass-lime rounded-xl text-sm">{t('nav.signIn')}</Link>
+            <Link to="/signup" className="px-6 py-3 btn-glass btn-glass-blue rounded-xl text-sm">{t('nav.signUp')}</Link>
           </div>
         </div>
+      </div>
+    </>
+  )
 
-        {error && (
-          <div className="bg-red-100 border border-red-300 text-red-700 p-3 rounded-xl mb-4 text-sm">{error}</div>
-        )}
+  const handleLogout = () => { logout(); navigate('/') }
 
-        {!user && !isLogin && (
-          <div className="flex gap-2 mb-4">
-            <button onClick={() => setIsLogin(true)} className="flex-1 py-2 bg-green-600 text-white rounded-lg text-sm">Sign In</button>
-            <button onClick={() => setIsLogin(false)} className="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm">Register</button>
+  return (
+    <>
+      <SEO title="Profile" description="Your NutriZen AI account profile." />
+      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="bg-gradient-to-br from-lime-600 via-lime-500 to-lime-600 rounded-2xl p-6 md:p-8 mb-8 text-white shadow-xl shadow-lime-500/10">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-4xl shadow-inner border border-white/20">👤</div>
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-400 rounded-full border-2 border-emerald-600 flex items-center justify-center shadow-sm">
+              <span className="text-white text-xs">✓</span>
+            </div>
           </div>
-        )}
+          <div>
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">{user.full_name || user.username}</h1>
+            <p className="text-emerald-100/80 text-sm flex items-center gap-1.5">@{user.username}</p>
+          </div>
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
-          {(!user || !isLogin) && (
-            <>
-              {!isLogin && (
-                <div>
-                  <label className="text-sm text-gray-600">Name</label>
-                  <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm" required />
-                </div>
-              )}
-              <div>
-                <label className="text-sm text-gray-600">Email</label>
-                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm" required />
-              </div>
-              <div>
-                <label className="text-sm text-gray-600">Password</label>
-                <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm" required={!user} />
-              </div>
-            </>
-          )}
+      <div className="glass-card rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+        <div className="px-6 py-4 border-b border-stone-200/60 dark:border-stone-700/40 flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-400" />
+          <h2 className="font-bold text-stone-800 dark:text-stone-100">{t('auth.accountDetails')}</h2>
+        </div>
+        <div className="p-6">
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1">{t('auth.email')}</p>
+              <p className="text-sm font-medium text-stone-700 dark:text-stone-200">{user.email}</p>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1">{t('auth.age')}</p>
+              <p className="text-sm font-medium text-stone-700 dark:text-stone-200">{user.age || t('auth.notSet')}</p>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1">{t('auth.allergies')}</p>
+              <p className="text-sm font-medium text-stone-700 dark:text-stone-200">{user.allergies || t('auth.noneListed')}</p>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1">{t('auth.dietaryPreferences')}</p>
+              <p className="text-sm font-medium text-stone-700 dark:text-stone-200">{user.dietary_preferences || t('auth.noneListed')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          {user && (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm text-gray-600">Weight (kg)</label>
-                  <input type="number" value={form.weight_kg} onChange={(e) => setForm({ ...form, weight_kg: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm" />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">Height (cm)</label>
-                  <input type="number" value={form.height_cm} onChange={(e) => setForm({ ...form, height_cm: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm" />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">Age</label>
-                  <input type="number" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm" />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">Gender</label>
-                  <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-600">Fitness Goal</label>
-                <select value={form.fitness_goal} onChange={(e) => setForm({ ...form, fitness_goal: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm">
-                  <option value="lose_weight">Lose Weight</option>
-                  <option value="maintain">Maintain</option>
-                  <option value="gain_weight">Gain Weight</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-600">Preferred Cuisine</label>
-                <input type="text" value={form.preferred_cuisine} onChange={(e) => setForm({ ...form, preferred_cuisine: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm" />
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-600">Language</label>
-                <select value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm">
-                  <option value="English">English</option>
-                  <option value="Hindi">Hindi</option>
-                  <option value="Telugu">Telugu</option>
-                  <option value="Tamil">Tamil</option>
-                  <option value="Spanish">Spanish</option>
-                  <option value="French">French</option>
-                </select>
-              </div>
-            </>
-          )}
-
-          <button type="submit" disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl font-medium hover:bg-green-700 disabled:opacity-50">
-            {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-            {user ? "Update Profile" : isLogin ? "Sign In" : "Register"}
-          </button>
-        </form>
-
-        {user && (
-          <button onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 mt-3 bg-red-50 text-red-600 py-3 rounded-xl font-medium hover:bg-red-100">
-            <LogOut size={18} /> Log Out
-          </button>
-        )}
+      <div className="flex gap-3 mt-6">
+        <button onClick={handleLogout} className="px-6 py-2.5 btn-glass btn-glass-red rounded-xl active:scale-[0.98] flex items-center gap-2">
+          {t('nav.signOut')}
+        </button>
+        <Link to="/scan" className="px-6 py-2.5 btn-glass btn-glass-lime rounded-xl active:scale-[0.98] flex items-center gap-2">
+          {t('nav.scan')}
+        </Link>
       </div>
     </div>
-  );
+    </>
+  )
 }

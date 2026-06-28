@@ -1,21 +1,12 @@
 {
   "name": "NutriZen AI",
   "short_name": "NutriZen",
-  "description": "AI-powered food management system",
+  "description": "AI-powered smart kitchen assistant — scan vegetables, get recipes, nutrition, allergy info, and smart substitutions.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#22c55e",
+  "theme_color": "#84CC16",
   "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://recipe-x.vercel.app/sitemap.xml

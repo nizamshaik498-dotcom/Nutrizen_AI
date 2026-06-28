@@ -1,35 +1,21 @@
 import os
-import cv2
-import tempfile
-import logging
+import base64
+from PIL import Image
+import io
+from dotenv import load_dotenv
 
-logger = logging.getLogger(__name__)
+load_dotenv()
 
 
-def preprocess_image(image_path: str) -> str:
-    try:
-        img = cv2.imread(image_path)
-        if img is None:
-            raise ValueError(f"Could not read image at {image_path}")
+def preprocess_image(image_bytes: bytes) -> bytes:
+    img = Image.open(io.BytesIO(image_bytes))
+    img = img.convert("RGB")
+    max_size = (1024, 1024)
+    img.thumbnail(max_size, Image.Resampling.LANCZOS)
+    buffer = io.BytesIO()
+    img.save(buffer, format="JPEG", quality=85)
+    return buffer.getvalue()
 
-        img = cv2.resize(img, (1024, 1024))
 
-        lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-        l, a, b = cv2.split(lab)
-        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-        l = clahe.apply(l)
-        lab = cv2.merge([l, a, b])
-        img = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
-
-        img = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
-
-        tmp_dir = tempfile.gettempdir()
-        output_path = os.path.join(tmp_dir, f"processed_{os.path.basename(image_path)}")
-        cv2.imwrite(output_path, img)
-
-        logger.info(f"Image processed and saved to {output_path}")
-        return output_path
-
-    except Exception as e:
-        logger.error(f"Image preprocessing failed: {e}")
-        raise
+def image_to_base64(image_bytes: bytes) -> str:
+    return base64.b64encode(image_bytes).decode("utf-8")

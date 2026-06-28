@@ -1,62 +1,73 @@
+import { useTranslation } from 'react-i18next'
+
+function Bar({ value, max, color }) {
+  const pct = Math.min((value / max) * 100, 100)
+  return (
+    <div className="w-full bg-stone-100 dark:bg-stone-700 rounded-full h-2 mt-1.5 overflow-hidden">
+      <div className={`h-2 rounded-full transition-all duration-700 ${color}`} style={{ width: `${pct}%` }} />
+    </div>
+  )
+}
+
 export default function NutritionTable({ nutrition }) {
-  if (!nutrition?.length) return null;
+  const { t } = useTranslation()
+  if (!nutrition || nutrition.length === 0) return null
+
+  const rows = [
+    { key: 'calories_kcal', label: t('nutrition.calories'), max: 100, color: 'bg-gradient-to-r from-lime-400 to-lime-500' },
+    { key: 'carbohydrates_g', label: t('nutrition.carbs'), max: 30, color: 'bg-gradient-to-r from-yellow-400 to-lime-500' },
+    { key: 'dietary_fibre_g', label: t('nutrition.fibre'), max: 10, color: 'bg-gradient-to-r from-emerald-400 to-emerald-500' },
+    { key: 'protein_g', label: t('nutrition.protein'), max: 10, color: 'bg-gradient-to-r from-blue-400 to-blue-500' },
+    { key: 'fat_g', label: t('nutrition.fat'), max: 10, color: 'bg-gradient-to-r from-red-400 to-red-500' },
+    { key: 'vitamin_c_mg', label: t('nutrition.vitaminC'), max: 100, color: 'bg-gradient-to-r from-lime-400 to-lime-400' },
+    { key: 'iron_mg', label: t('nutrition.iron'), max: 10, color: 'bg-gradient-to-r from-purple-400 to-purple-500' },
+    { key: 'potassium_mg', label: t('nutrition.potassium'), max: 600, color: 'bg-gradient-to-r from-indigo-400 to-indigo-500' },
+  ]
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Nutritional Breakdown</h3>
-      {nutrition.map((item, i) => (
-        <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 border-b flex items-center justify-between">
-            <span className="font-semibold">{item.vegetable_name}</span>
-            {item.health_score_out_of_10 && (
-              <span className="text-sm bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                Health: {item.health_score_out_of_10}/10
-              </span>
-            )}
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-8 h-8 bg-gradient-to-br from-lime-500 to-lime-600 rounded-lg flex items-center justify-center text-sm shadow-sm">🥦</div>
+        <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100">{t('nutrition.title')}</h2>
+      </div>
+      <div className="overflow-x-auto rounded-2xl shadow-sm glass-card">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/40">
+              <th className="p-3 text-left text-sm font-bold text-stone-700 dark:text-stone-200 border-b border-stone-100 dark:border-stone-700 whitespace-nowrap">{t('nutrition.nutrient')} ({t('nutrition.per100g')})</th>
+              {nutrition.map(n => <th key={n.vegetable_id} className="p-3 text-left text-sm font-bold text-stone-700 dark:text-stone-200 border-b border-stone-100 dark:border-stone-700 whitespace-nowrap">{n.vegetable_name}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(({ key, label, max, color }) => (
+              <tr key={key} className="hover:bg-lime-50/30 dark:hover:bg-lime-900/20 transition-colors">
+                <td className="p-3 text-sm text-stone-600 dark:text-stone-300 border-b border-slate-50 dark:border-stone-700/50 font-medium whitespace-nowrap">{label}</td>
+                {nutrition.map(n => {
+                  const val = n.per_100g?.[key]
+                  return (
+                    <td key={n.vegetable_id} className="p-3 text-sm text-stone-700 dark:text-stone-200 border-b border-slate-50 dark:border-stone-700/50 min-w-[120px]">
+                      <span className="font-bold text-stone-800 dark:text-stone-100">{val ?? '-'}</span>
+                      {val != null && <Bar value={val} max={max} color={color} />}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {nutrition.map(n => (
+          <div key={n.vegetable_id} className="text-sm glass-card rounded-xl px-4 py-2 shadow-sm">
+            <span className="font-bold text-stone-700 dark:text-stone-200">{n.vegetable_name}</span>
+            <span className="text-stone-400 dark:text-stone-500 mx-1.5">·</span>
+            <span className="text-stone-500 dark:text-stone-400">{t('nutrition.glycemicIndex')} {n.glycemic_index ?? t('common.na')}</span>
+            <span className="text-stone-400 dark:text-stone-500 mx-1.5">·</span>
+            <span className="text-lime-600 dark:text-lime-400 font-semibold">{n.health_score_out_of_10}/10</span>
           </div>
-          {item.per_100g && (
-            <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
-              {item.per_100g.calories_kcal !== undefined && (
-                <div className="bg-blue-50 p-2 rounded"><span className="font-medium">Calories</span><br />{item.per_100g.calories_kcal} kcal</div>
-              )}
-              {item.per_100g.carbohydrates_g !== undefined && (
-                <div className="bg-yellow-50 p-2 rounded"><span className="font-medium">Carbs</span><br />{item.per_100g.carbohydrates_g}g</div>
-              )}
-              {item.per_100g.dietary_fibre_g !== undefined && (
-                <div className="bg-green-50 p-2 rounded"><span className="font-medium">Fiber</span><br />{item.per_100g.dietary_fibre_g}g</div>
-              )}
-              {item.per_100g.protein_g !== undefined && (
-                <div className="bg-red-50 p-2 rounded"><span className="font-medium">Protein</span><br />{item.per_100g.protein_g}g</div>
-              )}
-              {item.per_100g.fat_g !== undefined && (
-                <div className="bg-orange-50 p-2 rounded"><span className="font-medium">Fat</span><br />{item.per_100g.fat_g}g</div>
-              )}
-              {item.per_100g.vitamin_c_mg !== undefined && (
-                <div className="bg-purple-50 p-2 rounded"><span className="font-medium">Vitamin C</span><br />{item.per_100g.vitamin_c_mg}mg</div>
-              )}
-              {item.per_100g.iron_mg !== undefined && (
-                <div className="bg-indigo-50 p-2 rounded"><span className="font-medium">Iron</span><br />{item.per_100g.iron_mg}mg</div>
-              )}
-              {item.per_100g.potassium_mg !== undefined && (
-                <div className="bg-cyan-50 p-2 rounded"><span className="font-medium">Potassium</span><br />{item.per_100g.potassium_mg}mg</div>
-              )}
-              {item.per_100g.calcium_mg !== undefined && (
-                <div className="bg-teal-50 p-2 rounded"><span className="font-medium">Calcium</span><br />{item.per_100g.calcium_mg}mg</div>
-              )}
-            </div>
-          )}
-          <div className="px-4 pb-3 flex flex-wrap gap-2 text-xs">
-            {item.glycemic_index && <span className="bg-gray-100 px-2 py-0.5 rounded">GI: {item.glycemic_index}</span>}
-            {item.glycemic_load && <span className="bg-gray-100 px-2 py-0.5 rounded">GL: {item.glycemic_load}</span>}
-            {item.health_score_reason && (
-              <p className="w-full text-gray-500 mt-1">{item.health_score_reason}</p>
-            )}
-            {item.data_confidence && (
-              <p className="w-full text-gray-400 italic">Data confidence: {item.data_confidence}</p>
-            )}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
+      {nutrition.some(n => n.data_confidence === 'Estimated') && <p className="text-xs text-lime-600 dark:text-lime-400 mt-3 flex items-center gap-1">⚠ {t('nutrition.someValuesEstimated')}</p>}
     </div>
-  );
+  )
 }

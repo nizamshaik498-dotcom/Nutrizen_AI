@@ -1,49 +1,57 @@
-# Dependencies
-node_modules/
+# ─── Python ──────────────────────────────────────────────
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
 *.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
 
-# Environment files
+# ─── Secrets ────────────────────────────────────────────
 .env
+.env.local
+.env.*.local
+*.env
 backend/.env
 frontend/.env
 
-# IDE / OS
+# ─── Databases ──────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ─── Node ───────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Vite / Build ───────────────────────────────────────
+frontend/.vite/
+*.tsbuildinfo
+
+# ─── IDE ────────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+
+# ─── OS ─────────────────────────────────────────────────
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# Build outputs
-dist/
-build/
-*.egg
-
-# Python virtual env
-venv/
-env/
-.venv/
-
-# Vite / React
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Uploaded / processed images
-/tmp/
-*.jpg
-*.jpeg
-*.png
-!public/*.png
-
-# SQLite (if used locally)
-*.db
-*.sqlite
-
-# Logs
-*.log
+# ─── Project-specific ───────────────────────────────────
+.vercel
+site_lock.json
+backend/wsgi_deploy_prod.py
+backend/test_groq.py
+backend/*.egg-info/

@@ -1,58 +1,49 @@
-import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from .database import init_db
-from .routes import auth, scan, recipes, nutrition, pantry, favourites, search
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from database import init_db
+from routes.auth import router as auth_router
+from routes.scan import router as scan_router
+from routes.favorites import router as favorites_router
+from routes.meal_planner import router as meal_planner_router
+from routes.nutrition import router as nutrition_router
+from routes.site_lock import router as site_lock_router
 
 app = FastAPI(
-    title="NutriZen AI API",
-    description="AI-powered Food Management System",
-    version="1.0.0",
+    title="NutriZen AI — Food Management System",
+    description="AI-powered smart kitchen assistant. Scan vegetables, get recipes, nutrition, allergy info, and smart substitutions.",
+    version="2.0.0",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://nutrivision.vercel.app",
-        "http://localhost:5173",
-        "http://localhost:3000",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(auth.router, prefix="/api")
-app.include_router(scan.router, prefix="/api")
-app.include_router(recipes.router, prefix="/api")
-app.include_router(nutrition.router, prefix="/api")
-app.include_router(pantry.router, prefix="/api")
-app.include_router(favourites.router, prefix="/api")
-app.include_router(search.router, prefix="/api")
+app.include_router(auth_router)
+app.include_router(scan_router)
+app.include_router(favorites_router)
+app.include_router(meal_planner_router)
+app.include_router(nutrition_router)
+app.include_router(site_lock_router)
 
 
 @app.on_event("startup")
-def on_startup():
-    try:
-        init_db()
-        logger.info("Database tables created successfully")
-    except Exception as e:
-        logger.warning(f"Database initialization skipped: {e}")
+def startup():
+    init_db()
 
 
 @app.get("/")
 def root():
     return {
         "app": "NutriZen AI",
-        "version": "1.0.0",
         "status": "running",
+        "version": "2.0.0",
     }
 
 
-@app.get("/api/health")
+@app.get("/health")
 def health():
     return {"status": "healthy"}
