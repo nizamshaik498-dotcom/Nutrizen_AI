@@ -37,7 +37,7 @@ export default function useVoiceAssistant() {
         setStatus(`Starting ${recipe.name}`)
         window.__NUTRIVIZEN_RECIPE__ = recipe
         window.__NUTRIVIZEN_AUTOSPEAK__ = true
-        navigate('/cooking-mode')
+        navigate('/cooking-mode', { state: { recipe } })
         setTimeout(() => speak(`${recipe.name}. ${recipe.steps[0]}`), 500)
       } else {
         setStatus('Could not generate recipe')

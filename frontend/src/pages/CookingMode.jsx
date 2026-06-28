@@ -7,7 +7,7 @@ export default function CookingMode() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const r = location.state?.recipe || null
+  const r = location.state?.recipe || window.__NUTRIVIZEN_RECIPE__ || null
 
   const [currentStep, setCurrentStep] = useState(0)
   const timerRef = useRef(null)
