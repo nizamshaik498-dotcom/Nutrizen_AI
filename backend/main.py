@@ -7,6 +7,7 @@ from routes.favorites import router as favorites_router
 from routes.meal_planner import router as meal_planner_router
 from routes.nutrition import router as nutrition_router
 from routes.site_lock import router as site_lock_router
+from routes.ai import router as ai_router
 
 app = FastAPI(
     title="NutriZen AI — Food Management System",
@@ -28,6 +29,7 @@ app.include_router(favorites_router)
 app.include_router(meal_planner_router)
 app.include_router(nutrition_router)
 app.include_router(site_lock_router)
+app.include_router(ai_router)
 
 
 @app.on_event("startup")

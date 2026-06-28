@@ -31,7 +31,7 @@ export default function useVoiceAssistant() {
     setTranscript(t)
     setStatus('Thinking...')
     try {
-      const res = await axios.post(`${API}/ai/command`, { prompt: t }, { timeout: 30000 })
+      const res = await axios.post(`${API}/api/ai/command`, { prompt: t }, { timeout: 30000 })
       const recipe = res.data?.recipe
       if (recipe && recipe.name && recipe.steps?.length) {
         setStatus(`Starting ${recipe.name}`)

@@ -13,7 +13,7 @@ export default function SiteLockGate({ children }) {
       setState('unlocked')
       return
     }
-    fetch(`${API}/site-lock/`)
+    fetch(`${API}/api/site-lock/`)
       .then(r => r.json())
       .then(data => {
         if (data.locked) setState('locked')
@@ -28,7 +28,7 @@ export default function SiteLockGate({ children }) {
     setSubmitting(true)
     setError('')
     try {
-      const res = await fetch(`${API}/site-lock/verify`, {
+      const res = await fetch(`${API}/api/site-lock/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: password.trim() }),
